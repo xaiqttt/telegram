@@ -1,0 +1,12 @@
+{
+  "name": "telegram-passcode-app",
+  "version": "1.0.0",
+  "description": "A Telegram-inspired 5-digit passcode entry screen with a Node.js backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
